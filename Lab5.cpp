@@ -225,7 +225,7 @@ istream& operator>>(istream& is, Lorry& a) {
     return is;
 }
 
-int main() {
+int main1() {
 
     char Choice = 'n';
     do {
@@ -320,7 +320,7 @@ int main() {
 
 
         case '7': {
-            ifstream fileLorry("fileLorry.txt");
+            ifstream fileLorry("fileLorry1.txt");
             int n, i;
             fileLorry >> n;
             if (n > 0)
@@ -369,4 +369,392 @@ int main() {
     cout << " Exit from test! Bye! \n";
     return 0;
 
+}
+
+
+
+
+
+/*
+Створити клас кнопка, що має розмір. Визначити конструктори й метод
+доступу. Створити клас вікно, що містить клас кнопка. Додатково є координати
+вікна. Визначити конструктори й деструктор. Визначити public- похідний клас вікно
+із кнопкою меню, що й має (вказівник на рядок). Визначити конструктори,
+деструктори й функцію друку
+*/
+
+
+
+struct Button {
+    string size;
+
+    Button() {
+        size = "No Size";
+        cout << "Default constructor Button \n";
+    }
+
+    Button(string fn) {
+        size = fn;
+        cout << "Constructor Button(string fn) \n";
+    }
+
+    Button(const Button& s) {
+        size = s.size;
+        cout << "Constructor Copy Button(const Button &) \n";
+    }
+
+    Button(Button&& s) {
+        size = s.size;
+        cout << " Constructor Move Button(Button &&) \n";
+        s.size = "BMW";
+    }
+    Button(const char* fn, const int n, const double ln) {
+        size = fn;
+        cout << " Constructor Button(const char * ... ) \n";
+    }
+    ~Button() {
+        cout << "Destructor ~Button() \n";
+    }
+    Button& operator=(const Button& s)
+    {
+        size = s.size;
+        cout << " Button operator=(Button &) \n";
+        return *this;
+    }
+    string toString() {
+        string ts = "\n     Size: " + size + " ";
+        return ts;
+    }
+    bool operator==(Button& b) {
+        return size == b.size ? true : false;
+    }
+
+    void Input() {
+        cout << "Input size: "; cin >> size;
+    }
+    friend ostream& operator<<(ostream& os, Button& a);
+    friend istream& operator>>(istream& os, Button& a);
+};
+
+
+ostream& operator<<(ostream& os, Button& a) {
+    os << a.size << endl;
+    return os;
+}
+istream& operator>>(istream& is, Button& a) {
+    is >> a.size;
+    return is;
+}
+
+
+class Wind
+{
+protected:
+    int x, y;
+    Button size;
+public:
+    Wind() {
+        x = 0;
+        y = 0;
+        cout << " Default constructor Wind() \n";
+    }
+    Wind(int a, int w, string n) {
+        x = a;
+        y = w;
+        size = n;
+        cout << " Constructor Person(int a, int w, string n) \n";
+    }
+    Wind(int a, int w, Button& n) {
+        x = a;
+        y = w;
+        size = n;
+        cout << " Constructor Person(int a, int w, Wind n) \n";
+    }
+
+    ~Wind()
+    {
+        cout << "\tDestructor Wind\n";
+    }
+
+    void setCyl(int a) {
+        if (a >= 0 && a <= 10)
+            x = a;
+        else
+            cout << "X " << a << " not allow, X is " << x << endl;
+    }
+
+    void setPow(int w) {
+        if (w >= 0 && w <= 10)
+            y = w;
+        else
+            cout << "Y " << w << " not exist, Y is " << y << endl;;
+    }
+
+    string toString() {
+        string r, a, w;
+        a = to_string(x);
+        w = to_string(y);
+        r = size.toString() + " \n     X: " + a + " \n     Y: " + w;
+        return r;
+    }
+
+    void Input() {
+        size.Input();
+        cout << "Input X "; while (!(cin >> x) || (x < 0 || x > 10)) {
+            cin.clear();
+            cin.ignore(MAXSHORT, '\n');
+            fflush(stdin);
+            cout << "bad input X is 1 to 10 \n";
+        };
+
+        cout << "Input Y "; while (!(cin >> y) || (y < 0 || y > 10)
+            ) {
+            cin.clear();
+            cin.ignore(MAXSHORT, '\n');
+            fflush(stdin);
+            cout << "bad input Y is 1 to 10 \n";
+        };
+    }
+
+    friend ostream& operator<<(ostream& os, Wind& a);
+    friend istream& operator>>(istream& os, Wind& a);
+};
+
+ostream& operator<<(ostream& os, Wind& a) {
+    os << a.size;
+    os << a.x << endl;
+    os << a.y << endl;
+    return os;
+}
+istream& operator>>(istream& is, Wind& a) {
+    is >> a.size;
+    is >> a.x;
+    is >> a.y;
+    return is;
+}
+
+
+class Public : public Wind {
+    long long K;
+public:
+    Public() {
+        K = 0;
+        cout << " Default constructor Public() \n";
+    }
+    Public(int a, int w, string n, long long i) :
+        Wind(a, w, n) {
+        K = i;
+        cout << " Constructor Public(int a, int w, string n, long long i) \n";
+    }
+
+    Public(int a, int w, Button& pi, long long i) :
+        Wind(a, w, pi) {
+        K = i;
+        cout << " Constructor Wind(int a, int w, PIB& pib, long long i) \n";
+    }
+    ~Public() {
+        cout << "\tDestructor Public\n";
+    }
+    void setK(long long i) {
+        if (i > 0) K = i;
+        else K = 0;
+    }
+    string toString() {
+        string sK;
+        sK = to_string(K);
+        string s = Wind::toString() + " \n     K: " + sK + "\n ";
+        return s;
+    }
+    void Input() {
+        Wind::Input();
+        cout << "Input K (Model code) ";
+        while (!(cin >> K) || K < 0) {
+            cin.clear();
+            cin.ignore(MAXSHORT, '\n');
+            fflush(stdin);
+            cout << "bad input K \n";
+        };
+    }
+    void Output() {
+        cout << toString() << endl;
+    }
+    friend ostream& operator<<(ostream& os, Public& a);
+    friend istream& operator>>(istream& os, Public& a);
+};
+ostream& operator<<(ostream& os, Public& a) {
+    os << a.size;
+    os << a.x << endl;
+    os << a.y << endl;
+    os << a.K << endl;
+    return os;
+}
+istream& operator>>(istream& is, Public& a) {
+    is >> a.size;
+    is >> a.x;
+    is >> a.y;
+    is >> a.K;
+    return is;
+}
+
+int main2() {
+
+    char Choice = 'n';
+    do {
+        cout << "\n\n\n Main menu \n";
+        cout << "1 - Default constructor Public \n";
+        cout << "2 - Default constructor Public input \n";
+        cout << "3 - Constructor Public Public(int a, int w, Car1 pi, long long i) \n";
+        cout << "4 - Set X \n";
+        cout << "5 - Set Y \n";
+        cout << "6 - Set K \n";
+        cout << "7 - Input from file \n";
+        cout << "8 - Input array of Public and save file \n";
+        cout << "q - Quit \n";
+        cout << "Your choice: ";
+        cin >> Choice;
+        switch (Choice)
+        {
+        case '1': {
+            Button test;
+            cout << test.toString() << " \n";
+        }
+                break;
+        case '2': {
+            Public test;
+            cout << " Input size: \n";
+            test.Input();
+            cout << " Input " << test.toString() << " \n";
+        }
+                break;
+        case '3': {
+            Button size("10");
+            Public t(5.15, 10.1, size, 24856);
+            string rez = t.toString();
+            cout << rez;
+        }
+                break;
+        case '4': {
+            Button size("1");
+            Public t(4.98, 4.6, size, 2534);
+            t.toString();
+            cout << t.toString() << endl;
+            cout << " Input new X: ";
+            int newC;
+            while (!(cin >> newC)) {
+                cin.clear();
+                cin.ignore(MAXSHORT, '\n');
+                fflush(stdin);
+                cout << "bad input \n";
+            };
+            t.setCyl(newC);
+            cout << " New recoeds " << t.toString() << endl;
+        }
+                break;
+        case '5': {
+            Button pi("52");
+            Public t(8.56, 4.96, pi, 752);
+            t.toString();
+            cout << t.toString() << endl;
+            cout << " Input new Y: ";
+            long long newP;
+            while (!(cin >> newP)) {
+                cin.clear();
+                cin.ignore(MAXSHORT, '\n');
+                fflush(stdin);
+
+                cout << "bad input \n";
+            };
+            t.setPow(newP);
+            cout << " New recoeds " << t.toString() << endl;
+        }
+                break;
+
+
+        case '6': {
+            Button pi("4");
+            Public t(1.2, 7.41, pi, 956);
+            t.toString();
+            cout << t.toString() << endl;
+            cout << " Input new K: ";
+            long long newK;
+            while (!(cin >> newK)) {
+                cin.clear();
+                cin.ignore(MAXSHORT, '\n');
+                fflush(stdin);
+
+                cout << "bad input \n";
+            };
+            t.setK(newK);
+            cout << " New recoeds " << t.toString() << endl;
+        }
+                break;
+
+
+        case '7': {
+            ifstream filePublic("filePublic1.txt");
+            int n, i;
+            filePublic >> n;
+            if (n > 0)
+            {
+                Public* pMas;
+                pMas = new Public[n];
+                for (i = 0; i < n; i++)
+                    filePublic >> pMas[i];
+                cout << "Public in file \n";
+                for (i = 0; i < n; i++)
+                    cout << pMas[i].toString() << endl;
+                cout << " delete \n";
+                delete[] pMas;
+            }
+        }
+                break;
+        case '8': {
+            ofstream filePublic("filePublic1.txt");
+            int n, i;
+            cout << " Input num Public ";
+            while (!(cin >> n) || n < 0) {
+                cin.clear();
+                cin.ignore(MAXSHORT, '\n');
+                fflush(stdin);
+                cout << "bad input num \n";
+            };
+            Public* pMas;
+            pMas = new Public[n];
+            for (i = 0; i < n; i++)
+                pMas[i].Input();
+            cout << "Public in input e \n";
+            for (i = 0; i < n; i++)
+                cout << pMas[i].toString() << endl;
+            filePublic << n << endl;
+            for (i = 0; i < n; i++)
+                filePublic << pMas[i];
+            cout << "Public save in file \n";
+            cout << " delete \n";
+            delete[] pMas;
+        }
+        case 'q': break;
+        default:
+            cout << " ??? Choice {1,2, ..., 7 or q} \n";
+        }
+    } while (Choice != 'q');
+    cout << " Exit from test! Bye! \n";
+    return 0;
+
+}
+
+
+
+int main()
+{
+    int n;
+    cout << "N: ";
+e: cin >> n;
+
+    switch (n) {
+    case 1: main1(); break;
+    case 2: main2(); break;
+    default: cout << "Error\n"; goto e;
+    }
+
+    return 0;
 }
