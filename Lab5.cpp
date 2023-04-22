@@ -550,7 +550,7 @@ public:
     Public(int a, int w, Button& pi, long long i) :
         Wind(a, w, pi) {
         K = i;
-        cout << " Constructor Wind(int a, int w, PIB& pib, long long i) \n";
+        cout << " Constructor Wind(int a, int w, Button& pi, long long i) \n";
     }
     ~Public() {
         cout << "\tDestructor Public\n";
@@ -752,29 +752,42 @@ int main2() {
 
 struct Name {
     string name;
+    string lname;
 
     Name() {
-        name = "No name";
+        name = "No Name";
+        lname = "No Last Name";
         cout << "Default constructor Name \n";
     }
 
     Name(string fn) {
         name = fn;
+        lname = fn;
         cout << "Constructor Name(string fn) \n";
+    }
+
+    Name(string fn[2]) {
+        name = fn[0];
+        lname = fn[1];
+        cout << "Constructor Name(string fn[]) \n";
     }
 
     Name(const Name& s) {
         name = s.name;
+        lname = s.lname;
         cout << "Constructor Copy Name(const N &) \n";
     }
 
     Name(Name&& s) {
         name = s.name;
+        lname = s.lname;
         cout << " Constructor Move Name(Name &&) \n";
-        s.name = "BMW";
+        s.name = "No Name";
+        s.lname = "No Last Name";
     }
-    Name(const char* fn, const int n, const double ln) {
+    Name(const char* fn, const char* ln) {
         name = fn;
+        lname = ln;
         cout << " Constructor Name(const char * ... ) \n";
     }
     ~Name() {
@@ -783,30 +796,35 @@ struct Name {
     Name& operator=(const Name& s)
     {
         name = s.name;
+        lname = s.lname;
         cout << " Name operator=(Name &) \n";
         return *this;
     }
     string toString() {
-        string ts = "\n     Name: " + name + " ";
+        string ts = "\n     Name: " + name + " " + lname + " ";
         return ts;
     }
+
     bool operator==(Name& b) {
-        return name == b.name ? true : false;
+        return name == b.name && lname == b.lname ? true : false;
     }
 
     void Input() {
         cout << "Input name: "; cin >> name;
+        cout << "Input last name "; cin >> lname;
     }
-    friend ostream& operator<<(ostream& os, Car1& a);
-    friend istream& operator>>(istream& os, Car1& a);
+    friend ostream& operator<<(ostream& os, Name& a);
+    friend istream& operator>>(istream& os, Name& a);
 };
 
 ostream& operator<<(ostream& os, Name& a) {
     os << a.name << endl;
+    os << a.lname << endl;
     return os;
 }
 istream& operator>>(istream& is, Name& a) {
     is >> a.name;
+    is >> a.lname;
     return is;
 }
 
@@ -833,6 +851,7 @@ public:
         weight = w;
         name = new Name;
         name->name = n.name;
+        name->lname = n.lname;
         cout << " Constructor People(int a, int w, Name &n) \n";
     }
     People(const People& n) {
@@ -840,6 +859,7 @@ public:
         weight = n.weight;
         name = new Name;
         name->name = n.name->name;
+        name->lname = n.name->lname;
         cout << " Constructor Copy People(const People& n) \n";
     }
     People(People&& n) {
@@ -856,6 +876,7 @@ public:
         weight = s.weight;
         name = new Name;
         name->name = s.name->name;
+        name->lname = s.name->lname;
         cout << " operator=(const People& s) Copy \n";
         return *this;
     }
@@ -889,8 +910,8 @@ public:
         string r, a, w;
         a = to_string(age);
         w = to_string(weight);
-        if (name == nullptr) r = " No set name age: " + a + " weight: " + w;
-        else r = name->toString() + " age: " + a + " weight: " + w;
+        if (name == nullptr) r = "\n     Age: " + a + "\n     Weight: " + w;
+        else r = name->toString() + "\n     Age: " + a + "\n     Weight: " + w;
         return r;
     }
     void Input() {
@@ -928,35 +949,19 @@ istream& operator>>(istream& is, People& a) {
 }
 
 class Student : public People {
-    long long ID;
-    int numChild;
-    string* nameChild;
+    long long Series;
 public:
     Student() {
-        ID = 0;
-        nameChild = nullptr;
+        Series = 0;
         cout << " Default constructor Student \n";
     }
-    Student(int a, int w, Name& pib, long long i, int kC, string* nameC) :
-        People(a, w, pib) {
-        ID = i;
-        numChild = kC;
-        if (kC > 0) {
-            nameChild = new string[kC];
-            for (int i = 0; i < numChild; i++)
-                nameChild[i] = nameC[i];
-        }
-        cout << "Student(int a, int w, PIB & pib, long long i, int kC, string *nameC ) \n";
+    Student(int a, int w, Name& pi, long long i) :
+        People(a, w, pi) {
+        Series = i;
+        cout << "Student(int a, int w, Name & pi, long long i) \n";
     }
     Student(const Student& s) : People(s) {
-        ID = s.ID;
-        numChild = s.numChild;
-        if (numChild > 0)
-        {
-            nameChild = new string[numChild];
-            for (int i = 0; i < numChild; i++)
-                nameChild[i] = s.nameChild[i];
-        }
+        Series = s.Series;
         cout << " Constructor Copy Student(const Student &s) \n";
     }
     Student(Student&& s) {
@@ -966,28 +971,16 @@ public:
         s.name = nullptr;
         s.age = 0;
         s.weight = 0;
-        ID = s.ID;
-        numChild = s.numChild;
-        nameChild = s.nameChild;
-        s.numChild = 0;
-        s.nameChild = nullptr;
+        Series = s.Series;
         cout << " Constructor Move Student( Student &&s) \n";
     }
     ~Student()
     {
-        if (nameChild != nullptr) delete[] nameChild;
         cout << "\tDestructor Student\n";
     }
     Student& operator=(const Student& s) {
         this->People::operator=(s);
-        ID = s.ID;
-        numChild = s.numChild;
-        if (numChild > 0)
-        {
-            nameChild = new string[numChild];
-            for (int i = 0; i < numChild; i++)
-                nameChild[i] = s.nameChild[i];
-        }
+        Series = s.Series;
         cout << " Student& operator =(const Student &s) \n";
         return *this;
     }
@@ -999,58 +992,30 @@ public:
         s.name = nullptr;
         s.age = 0;
         s.weight = 0;
-        ID = s.ID;
-        numChild = s.numChild;
-        if (nameChild) delete[] nameChild;
-        nameChild = s.nameChild;
-        s.numChild = 0;
-        s.nameChild = nullptr;
-        cout << " Adult& operator =(Adult &&s) \n";
+        Series = s.Series;
+        cout << " Student& operator =(Student &&s) \n";
         return *this;
     }
-    void setID(long long i) {
-        if (i > 0) ID = i;
-        else ID = 0;
+    void setSeries(long long i) {
+        if (i > 0) Series = i;
+        else Series = 0;
     }
     string toString()
     {
-        string sID;
-        sID = to_string(ID);
-        string s = People::toString() + " ID: " + sID;
-        string nd = " nd = " + to_string(numChild) + " : ";
-        if (numChild > 0) {
-            for (int i = 0; i < numChild; i++)
-                nd += nameChild[i] + " ";
-            s += nd;
-        }
+        string sS;
+        sS = to_string(Series);
+        string s = People::toString() + "\n     Series: " + sS;
         return s;
     }
     void Input() {
         People::Input();
-        cout << "Input ID ";
-        while (!(cin >> ID) || ID < 0) {
+        cout << "Input Series ";
+        while (!(cin >> Series) || Series < 0) {
             cin.clear();
             cin.ignore(MAXSHORT, '\n');
             fflush(stdin);
-            cout << "bad input ID \n";
+            cout << "bad input Series \n";
         };
-        cout << "Input num Child ";
-        while (!(cin >> numChild) || numChild < 0) {
-            cin.clear();
-            cin.ignore(MAXSHORT, '\n');
-            fflush(stdin);
-            cout << "bad input numChild \n";
-        };
-        if (numChild > 0)
-        {
-            if (nameChild != nullptr) delete[] nameChild;
-            nameChild = new string[numChild];
-            for (int i = 0; i < numChild; i++)
-            {
-                cout << "Input Name Child ";
-                cin >> nameChild[i];
-            }
-        }
     }
     void Output() {
         cout << toString() << endl;
@@ -1065,15 +1030,11 @@ public:
     friend istream& operator>>(istream& os, Student& a);
 };
 ostream& operator<<(ostream& os, Student& a) {
-    if (a.name == nullptr) os << " No P \n No N \n No F\n ";
+    if (a.name == nullptr) os << " No Name \n No Last Name \n ";
     os << *(a.name);
     os << a.age << endl;
     os << a.weight << endl;
-    os << a.ID << endl;
-    os << a.numChild << endl;
-    if (a.numChild > 0)
-        for (int i = 0; i < a.numChild; i++)
-            os << a.nameChild[i] << endl;
+    os << a.Series << endl;
     return os;
 }
 istream& operator>>(istream& is, Student& a) {
@@ -1081,12 +1042,7 @@ istream& operator>>(istream& is, Student& a) {
     is >> *(a.name);
     is >> a.age;
     is >> a.weight;
-    is >> a.ID;
-    is >> a.numChild;
-    if (a.numChild > 0)
-        if (a.nameChild == nullptr) a.nameChild = new string[a.numChild];
-    for (int i = 0; i < a.numChild; i++)
-        is >> a.nameChild[i];
+    is >> a.Series;
     return is;
 }
 
@@ -1096,17 +1052,17 @@ int main3() {
     char Choice = 'n';
     do {
         cout << "\n \n \n  Main menu \n";
-        cout << "1 -  Default constructor Adult \n";
-        cout << "2 -  Default constructor Adult input  \n";
-        cout << "3 -  Constructor Adult  Adult(int a, int w, PIB pib, long long i)   \n";
+        cout << "1 -  Default constructor Student \n";
+        cout << "2 -  Default constructor Student input  \n";
+        cout << "3 -  Constructor Student  Student(int a, int w, Name pi, long long i)   \n";
         cout << "4 -  Set age   \n";
-        cout << "5 -  Set ID   \n";
+        cout << "5 -  Set Series   \n";
         cout << "6 -  Input from file   \n";
-        cout << "7 -  Input array of  Adult and save file   \n";
+        cout << "7 -  Input array of  Student and save file   \n";
         cout << "8 -  Consructor Copy & operator=   \n";
         cout << "9 -  Consructor Move & move operator=  \n";
-        cout << "q -   вихiд  \n";
-        cout << "Ваш вибiр (you choice ): ";
+        cout << "q -   Exit  \n";
+        cout << "You choice ): ";
         cin >> Choice;
         switch (Choice)
         {
@@ -1117,26 +1073,24 @@ int main3() {
                 break;
         case '2': {
             Student test;
-            cout << " Введіть :  Прізвище Імя По-батькові вік вага ID  (ПІБ - Англ. мовою)  \n";
+            cout << " Input :  Name, last name, age, weight, series   \n";
             test.Input();
-            cout << " Введено " << test.toString() << "  \n";
+            cout << " Input " << test.toString() << "  \n";
         }
                 break;
         case '3': {
-            Name n("Zuzak");
-            string nameC[] = { "Masha","Sacha","Dasha" };
-            Student t(30, 50, n, 2323190, 3, nameC);
+            Name n("Zuzak","Loy");
+            Student t(30, 50, n, 2323190);
             cout << t.toString() << endl;
 
         }
                 break;
         case '4': {
-            Name n("Boris");
-            string nameC[] = { "Masha","Sacha","Dasha" };
-            Student t(30, 50, n, 2323190, 3, nameC);
+            Name n("Boris", "Mosd");
+            Student t(15, 43, n, 47231);
             t.toString();
             cout << t.toString() << endl;
-            cout << " Input new age Boris  ";
+            cout << " Input new Age  ";
             int newAge;
             while (!(cin >> newAge)) {
                 cin.clear();
@@ -1149,20 +1103,19 @@ int main3() {
         }
                 break;
         case '5': {
-            Name pib("Ivan");
-            string nameC[] = { "Masha","Sacha","Dasha" };
-            Student t(30, 50, pib, 2323190, 3, nameC);
+            Name pi("Ivan", "Fron");
+            Student t(7, 25, pi, 6257);
             t.toString();
             cout << t.toString() << endl;
-            cout << " Input new Id Ivan  ";
-            long long newId;
-            while (!(cin >> newId)) {
+            cout << " Input new Series  ";
+            long long newS;
+            while (!(cin >> newS)) {
                 cin.clear();
                 cin.ignore(MAXSHORT, '\n');
                 fflush(stdin);
                 cout << "bad  input  \n";
             };
-            t.setID(newId);
+            t.setSeries(newS);
             cout << " New recoeds " << t.toString() << endl;
         }
                 break;
@@ -1213,9 +1166,8 @@ int main3() {
             break;
         }
         case '8': {
-            Name n("Kolia");
-            string nameC[] = { "Masha","Sacha","Dasha" };
-            Student t(30, 50, n, 2323190, 3, nameC);
+            Name n("Kolia","Palad");
+            Student t(30, 57, n, 7785);
             cout << t.toString() << endl;
             cout << " Test constructor copy \n";
             Student nB(t);
@@ -1228,9 +1180,8 @@ int main3() {
         }
                 break;
         case '9': {
-            Name n("Petro");
-            string nameC[] = { "Masha","Sacha","Dasha" };
-            Student t(30, 50, n, 2323190, 3, nameC);
+            Name n("Petro","Jod");
+            Student t(24, 74, n, 5624);
             cout << t.toString() << endl;
             Student q;
             Student r;
