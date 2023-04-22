@@ -65,7 +65,6 @@ struct Car1 {
     friend istream& operator>>(istream& os, Car1& a);
 };
 
-
 ostream& operator<<(ostream& os, Car1& a) {
     os << a.mark << endl;
     return os;
@@ -74,7 +73,6 @@ istream& operator>>(istream& is, Car1& a) {
     is >> a.mark;
     return is;
 }
-
 
 class Car
 {
@@ -162,7 +160,6 @@ istream& operator>>(istream& is, Car& a) {
     return is;
 }
 
-
 class Lorry : public Car {
     long long K;
 public:
@@ -179,7 +176,7 @@ public:
     Lorry(int a, int w, Car1& pi, long long i) :
         Car(a, w, pi) {
         K = i;
-        cout << " Constructor Car(int a, int w, PIB& pib, long long i) \n";
+        cout << " Constructor Car(int a, int w, Car1& pi, long long i) \n";
     }
     ~Lorry() {
         cout << "\tDestructor Lorry\n";
@@ -372,9 +369,6 @@ int main1() {
 }
 
 
-
-
-
 /*
 Створити клас кнопка, що має розмір. Визначити конструктори й метод
 доступу. Створити клас вікно, що містить клас кнопка. Додатково є координати
@@ -382,7 +376,6 @@ int main1() {
 із кнопкою меню, що й має (вказівник на рядок). Визначити конструктори,
 деструктори й функцію друку
 */
-
 
 
 struct Button {
@@ -436,7 +429,6 @@ struct Button {
     friend istream& operator>>(istream& os, Button& a);
 };
 
-
 ostream& operator<<(ostream& os, Button& a) {
     os << a.size << endl;
     return os;
@@ -445,7 +437,6 @@ istream& operator>>(istream& is, Button& a) {
     is >> a.size;
     return is;
 }
-
 
 class Wind
 {
@@ -532,7 +523,6 @@ istream& operator>>(istream& is, Wind& a) {
     is >> a.y;
     return is;
 }
-
 
 class Public : public Wind {
     long long K;
@@ -1046,7 +1036,6 @@ istream& operator>>(istream& is, Student& a) {
     return is;
 }
 
-
 int main3() {
     
     char Choice = 'n';
@@ -1062,7 +1051,7 @@ int main3() {
         cout << "8 -  Consructor Copy & operator=   \n";
         cout << "9 -  Consructor Move & move operator=  \n";
         cout << "q -   Exit  \n";
-        cout << "You choice ): ";
+        cout << "You choice : ";
         cin >> Choice;
         switch (Choice)
         {
